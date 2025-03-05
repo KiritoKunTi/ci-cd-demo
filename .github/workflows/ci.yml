@@ -36,3 +36,23 @@ jobs:
         run: |
           docker build -t my-app .
           docker run -d -p 3000:3000 my-app
+
+  notify:
+    needs: [test, deploy]
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Send Slack notification
+        uses: slackapi/slack-github-action@v1.24.0
+        with:
+          payload: |
+            {
+              "text": "✅ CI/CD успешно выполнен!",
+              "attachments": [
+                {
+                  "text": "Проект успешно протестирован и задеплоен 🚀"
+                }
+              ]
+            }
+        env:
+          SLACK_WEBHOOK_URL: ${{ secrets.SLACK_WEBHOOK_URL }}
